@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - shopnet
+
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/shopdb
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - shopnet
+
+  payment:
+    build: ./payment
+    ports:
+      - "6000:6000"
+    networks:
+      - shopnet
+
+  mongo:
+    image: mongo:6
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - shopnet
+
+  redis:
+    image: redis:7
+    networks:
+      - shopnet
+
+networks:
+  shopnet:
+
+volumes:
+  mongo-data:
